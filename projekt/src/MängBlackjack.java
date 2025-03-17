@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class MängBlackjack {
@@ -21,7 +22,19 @@ public class MängBlackjack {
         while (mängKäib) {
             System.out.println("\nSinu saldo: " + mängija.getRaha() + " eurot.");
             System.out.print("Sisesta panuse summa (0, et lahkuda): ");
-            int panuseSumma = scanner.nextInt();
+            int panuseSumma = 0;
+            boolean õigeSisend = false;
+
+            // Keep asking for the input until the user enters a valid integer
+            while (!õigeSisend) {
+                try {
+                    panuseSumma = scanner.nextInt();
+                    õigeSisend = true;
+                } catch (InputMismatchException e) {
+                    System.out.println("Sisestatud väärtus ei ole korrektne! Palun sisesta täisarv.");
+                    scanner.nextLine();  // Clear the invalid input
+                }
+            }
 
             if (panuseSumma == 0) {
                 System.out.println("Lahkud blackjacki lauast. Näeme varsti jälle!");

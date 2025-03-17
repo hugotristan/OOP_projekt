@@ -30,7 +30,8 @@ public class Kasiino {
             }
 
             if (valik== 1) {
-                System.out.println("Blackjack pole veel valmis!"); // Hiljem lisame mängu
+                MängBlackjack blackjack = new MängBlackjack(mängija);
+                blackjack.mäng();
             } else if (valik == 2) {
                 Rulett rulett = new Rulett(mängija);
                 rulett.mäng();
