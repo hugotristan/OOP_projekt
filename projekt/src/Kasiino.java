@@ -36,6 +36,7 @@ public class Kasiino {
                 rulett.mäng();
             } else if (valik == 3) {
                 System.out.println("Aitäh mängimast! Lahkud kasiinost.");
+                System.out.println(mängija);
                 töötab = false;
             }
         }

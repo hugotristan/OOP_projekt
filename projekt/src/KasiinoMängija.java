@@ -29,8 +29,11 @@ public class KasiinoMängija {
     }
 
     public String getNimi() {
-
         return nimi;
+    }
+
+    public String toString() {
+        return nimi + " lahkus kasiinost " + raha + " euroga.";
     }
 }
 
