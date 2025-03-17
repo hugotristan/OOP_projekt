@@ -48,9 +48,17 @@ public class Rulett {
             System.out.println("1 - Punane");
             System.out.println("2 - Must");
             System.out.println("3 - Täpne number");
+            System.out.println("4 - Paaris arv");
+            System.out.println("5 - Paaritu arv");
+            System.out.println("6 - Kõrged arvud (19-36)");
+            System.out.println("7 - Madalad arvud (1-18)");
             System.out.println("Sinu valik: ");
             int panuseValik = scanner.nextInt();
 
+            if (panuseValik < 1 || panuseValik > 7) {
+                System.out.println("Vale valik! Palun vali number 1-7.");
+                continue;
+            }
             int keerutusetulemus = random.nextInt(37);
             boolean onPunane = kasPunane(keerutusetulemus);
 
@@ -62,7 +70,8 @@ public class Rulett {
                 e.printStackTrace();
             }
 
-            System.out.println("Pall langes numbrile: " + keerutusetulemus);
+            boolean onKõrge = keerutusetulemus > 18;
+            boolean onPaaris = keerutusetulemus % 2 == 0;
 
             boolean võitis = false;
             int võiduSumma = 0;
@@ -84,10 +93,33 @@ public class Rulett {
                     võitis = true;
                     võiduSumma = panuseSumma * 35;
                 }
-            } else {
-                System.out.println("Vale valik!");
-                return;
             }
+            else if (panuseValik == 4) {
+                if(onPaaris) {
+                    võitis = true;
+                    võiduSumma = panuseSumma * 2;
+                }
+
+            } else if (panuseValik == 5) {
+                if(!onPaaris && keerutusetulemus != 0) {
+                    võitis = true;
+                    võiduSumma = panuseSumma * 2;
+                }
+            }
+            else if (panuseValik == 6) {
+                if (onKõrge) {
+                    võitis = true;
+                    võiduSumma = panuseSumma * 2;
+                }
+            }
+            else if (panuseValik == 7) {
+                if (!onKõrge) {
+                    võitis = true;
+                    võiduSumma = panuseSumma * 2;
+                }
+            }
+
+            System.out.println("Pall langes numbrile: " + keerutusetulemus);
 
             if (võitis) {
                 System.out.println("Palju õnne! Võitsid " + võiduSumma + " eurot.");
@@ -96,7 +128,6 @@ public class Rulett {
                 System.out.println("Kahjuks kaotasid panuse");
 
             }
-            System.out.println("Sinu uus saldo on: " + mängija.getRaha());
         }
     }
 

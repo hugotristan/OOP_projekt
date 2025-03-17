@@ -16,19 +16,18 @@ public class Kasiino {
 
         boolean töötab = true;
         while (töötab){
-            System.out.println("Mida soovid mängida=");
+            System.out.println("Mida soovid mängida:");
             System.out.println("1 - Blackjack");
             System.out.println("2 - Rulett");
             System.out.println("3 - lahku kasiinost");
             System.out.println("Valik: ");
 
-            if (!scanner.hasNextInt()) {
-                System.out.println("Vale sisend! Sisesta number 1-3.");
-                scanner.next();
+            int valik = scanner.nextInt();
+
+            if (valik < 1 || valik > 3) {
+                System.out.println("Vale valik! Palun vali number 1-3.");
                 continue;
             }
-
-            int valik = scanner.nextInt();
 
             if (valik== 1) {
                 System.out.println("Blackjack pole veel valmis!"); // Hiljem lisame mängu
@@ -38,8 +37,6 @@ public class Kasiino {
             } else if (valik == 3) {
                 System.out.println("Aitäh mängimast! Lahkud kasiinost.");
                 töötab = false;
-            } else {
-                System.out.println("Vale valik! Proovi uuesti.");
             }
         }
         scanner.close();
