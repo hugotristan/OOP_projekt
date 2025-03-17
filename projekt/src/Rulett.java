@@ -57,6 +57,7 @@ public class Rulett {
 
             if (panuseValik < 1 || panuseValik > 7) {
                 System.out.println("Vale valik! Palun vali number 1-7.");
+                mängija.lisaRaha(panuseSumma);
                 continue;
             }
             int keerutusetulemus = random.nextInt(37);
