@@ -27,7 +27,9 @@ public class Kasiino {
             if (choice == 1) {
                 System.out.println("Blackjack pole veel valmis!"); // Hiljem lisame mängu
             } else if (choice == 2) {
-                System.out.println("Rulett pole veel valmis!"); // Hiljem lisame mängu
+                Rulett rulett = new Rulett(mängija);
+                rulett.mäng();
+                break;
             } else if (choice == 3) {
                 System.out.println("Aitäh mängimast! Lahkud kasiinost.");
                 töötab = false;
