@@ -8,7 +8,6 @@ public class KasiinoMängija {
     }
 
     public int getRaha() {
-
         return raha;
     }
 
@@ -16,7 +15,7 @@ public class KasiinoMängija {
         raha += summa;
     }
 
-    public boolean võtaRaha(int summa) {
+    public boolean panePanus(int summa) {
         if (summa > raha) {
             System.out.println("Kahjuks pole piisavalt raha...");
             return false;
