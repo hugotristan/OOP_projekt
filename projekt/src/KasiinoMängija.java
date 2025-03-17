@@ -16,6 +16,10 @@ public class KasiinoMängija {
     }
 
     public boolean panePanus(int summa) {
+        if (summa <= 0){
+            System.out.println("Panus peab olema positiivne number.");
+        return false;
+        }
         if (summa > raha) {
             System.out.println("Kahjuks pole piisavalt raha...");
             return false;

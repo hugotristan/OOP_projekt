@@ -22,15 +22,20 @@ public class Kasiino {
             System.out.println("3 - lahku kasiinost");
             System.out.println("Valik: ");
 
-            int choice = scanner.nextInt();
+            if (!scanner.hasNextInt()) {
+                System.out.println("Vale sisend! Sisesta number 1-3.");
+                scanner.next();
+                continue;
+            }
 
-            if (choice == 1) {
+            int valik = scanner.nextInt();
+
+            if (valik== 1) {
                 System.out.println("Blackjack pole veel valmis!"); // Hiljem lisame mängu
-            } else if (choice == 2) {
+            } else if (valik == 2) {
                 Rulett rulett = new Rulett(mängija);
                 rulett.mäng();
-                break;
-            } else if (choice == 3) {
+            } else if (valik == 3) {
                 System.out.println("Aitäh mängimast! Lahkud kasiinost.");
                 töötab = false;
             } else {

@@ -14,67 +14,76 @@ public class Rulett {
 
     public void mäng() {
         System.out.println("--- RULETT ---");
-        System.out.println("Sinu saldo: " + mängija.getRaha() + " eurot.");
-        System.out.println("Sisesta panuse summa: ");
-        int panuseSumma = scanner.nextInt();
 
-        if (!mängija.panePanus(panuseSumma)) {
-            System.out.println("Sul pole piisavalt raha panustamiseks.");
-        }
+        boolean mängKäib = true;
+        while (mängKäib) {
+            System.out.println("\nSinu saldo: " + mängija.getRaha() + " eurot.");
+            System.out.println("Sisesta panuse summa (0, et lahkuda): ");
+            int panuseSumma = scanner.nextInt();
 
-        System.out.println("Vali panus:");
-        System.out.println("1 - Punane");
-        System.out.println("2 - Must");
-        System.out.println("3 - Täpne number");
-        System.out.println("Sinu valik: ");
-        int panuseValik = scanner.nextInt();
-
-        int keerutusetulemus = random.nextInt(37);
-        boolean onPunane = kasPunane(keerutusetulemus);
-
-        System.out.println("Ratas keerleb...");
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Pall langes numbrile: " + keerutusetulemus);
-
-        boolean võitis = false;
-        int võiduSumma = 0;
-
-        if (panuseValik == 1) {
-            if (onPunane) {
-                võitis = true;
-                võiduSumma = panuseSumma * 2;
+            if (panuseSumma == 0) {
+                System.out.println("Lahkud ruletilauast.");
+                break;
             }
-        } else if (panuseValik == 2) {
-            if (!onPunane && keerutusetulemus != 0) {
-                võitis = true;
-                võiduSumma = panuseSumma * 2;
+            if (!mängija.panePanus(panuseSumma)) {
+                System.out.println("Sul pole piisavalt raha panustamiseks.");
+                continue;
             }
-        } else if (panuseValik == 3) {
-            System.out.println("Sisesta number vahemikus 0-36: ");
-            int mängijaNumber = scanner.nextInt();
-            if (mängijaNumber == keerutusetulemus) {
-                võitis = true;
-                võiduSumma = panuseSumma * 35;
+
+            System.out.println("Vali panus:");
+            System.out.println("1 - Punane");
+            System.out.println("2 - Must");
+            System.out.println("3 - Täpne number");
+            System.out.println("Sinu valik: ");
+            int panuseValik = scanner.nextInt();
+
+            int keerutusetulemus = random.nextInt(37);
+            boolean onPunane = kasPunane(keerutusetulemus);
+
+            System.out.println("Ratas keerleb...");
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        } else {
-            System.out.println("Vale valik!");
-            return;
-        }
 
-        if (võitis) {
-            System.out.println("Palju õnne! Võitsid " + võiduSumma + " eurot.");
-            mängija.lisaRaha(võiduSumma);
-        } else {
-            System.out.println("Kahjuks kaotasid panuse");
+            System.out.println("Pall langes numbrile: " + keerutusetulemus);
 
+            boolean võitis = false;
+            int võiduSumma = 0;
+
+            if (panuseValik == 1) {
+                if (onPunane) {
+                    võitis = true;
+                    võiduSumma = panuseSumma * 2;
+                }
+            } else if (panuseValik == 2) {
+                if (!onPunane && keerutusetulemus != 0) {
+                    võitis = true;
+                    võiduSumma = panuseSumma * 2;
+                }
+            } else if (panuseValik == 3) {
+                System.out.println("Sisesta number vahemikus 0-36: ");
+                int mängijaNumber = scanner.nextInt();
+                if (mängijaNumber == keerutusetulemus) {
+                    võitis = true;
+                    võiduSumma = panuseSumma * 35;
+                }
+            } else {
+                System.out.println("Vale valik!");
+                return;
+            }
+
+            if (võitis) {
+                System.out.println("Palju õnne! Võitsid " + võiduSumma + " eurot.");
+                mängija.lisaRaha(võiduSumma);
+            } else {
+                System.out.println("Kahjuks kaotasid panuse");
+
+            }
+            System.out.println("Sinu uus saldo on: " + mängija.getRaha());
         }
-        System.out.println("Sinu uus saldo on: " + mängija.getRaha());
     }
 
     private boolean kasPunane ( int number){
