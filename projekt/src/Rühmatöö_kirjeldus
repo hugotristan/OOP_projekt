@@ -49,9 +49,43 @@ Klassid, nende eesmärk ja olulisemad meetodid:
         keerutusest tulnud arv on punane kui ei ole siis ta on must, välja arvatud arv 0, selle arvu värvus on roheline.
 
 Projekti tegemise protsessi kirjeldus:
+    Projekti planeerimine:
+        - koostasime esialgse plaani ja mis mängud programmi lisame
+        - jagasime ülesanded rühmaliikmete vahel
+        - määrasime tähtajad
+
+    Baasstruktuuri loomine:
+        - Kasiino peaklass
+        - Kasiino mängija klass
+        - Määrasime ära ruleti ja blackjacki klassid
+
+    Mängude programmeerimine:
+        - Rulett: Panustamise võimalused, arvude genereerimise ja võidutulemuste kontrollimise
+        - Blackjack: klassid mis tegid ja milleks
+
+    Kasutajaliidese parandamine ja veakontroll:
+        - Kasutajasõbralikumad teated ja vigade käsitlemine (alede sisendite vältimine).
+        - Kontroll, et mängija ei saaks panustada rohkem raha, kui tal on või negatiivset arvu.
+
+    Lõplik testimine ja viimistlemine:
+        - Testisime mängude käiku erinevate sisenditega.
+        - Parandasime viimased vead ja optimeerisime koodi.
+        - Dokumenteerisime programmi töö ja koostasime kasutusjuhendi.
+
+    Kokkuvõte: Mõlemad rühmaliikmed osalesid kõikides etappides.
+
+Iga rühmaliikme panus:
+    - Markkus: Klassid: Kasiino, KasiinoMängija, Rulett. Ajakulu:
+    - Hugo: Klassid: MängBlackJack, MängijaBlackJack, Pakk, Käsi, Kaart, Diiler. Ajakulu:
 
 Tegemise mured:
+    - Tegemisel ei tekkinud suuri muresi, ega kohti kus oleksime tundnud, et teadmistest jääb puudu.
 
 Hinnang oma töö lõpptulemusele:
+    - Saime hästi hakkama:
+    - Vajab veel edasiarendust: Blackjack Split jne, Rulett veel erinevaid panuseid pole kõiki.
 
 Selgitus ja/või näited, kuidas programmi osi eraldi ja programmi tervikuna testisite ehk kuidas veendusite, et programm töötab korrektselt:
+    - N1
+    - N2
+    - N3
