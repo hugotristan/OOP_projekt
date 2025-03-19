@@ -1,20 +1,28 @@
 Autorite nimed: Markkus Pokrovski, Hugo Tristan Tammik
 Rühm: 6.rühm
 
-// projekti põhjalik kirjeldus, kus on kirjas programmi eesmärk ja selgitus programmi üldisest tööst, vajadusel lühike kasutusjuhis;
+projekti põhjalik kirjeldus, kus on kirjas programmi eesmärk ja selgitus programmi üldisest tööst, vajadusel lühike kasutusjuhis;
 Projekti kirjeldus:
 
 
 Klassid, nende eesmärk ja olulisemad meetodid:
 
-1. Kasiino klass:
-    - eesmärk: Peaklass, mis loob kasiino isendi, küsib mängija nime ja alustab programmi. Annab valiku mängida
-    ruletti, blackjacki või lahkuda kasiinost.
-    - olulisemad meetodid: alusta(), see paneb pogrammi käima (printides ekraanile valikud)
+    1. Kasiino klass:
+        - eesmärk: Peaklass, mis loob kasiino isendi, küsib mängija nime ja alustab programmi. Annab valiku mängida
+        ruletti, blackjacki või lahkuda kasiinost.
+        - olulisemad meetodid: alusta(), see paneb pogrammi käima (printides ekraanile valikud)
 
-2. KasiinoMängija klass:
+    2. KasiinoMängija klass:
+        - eesmärk: Klass, mis loob mängija isendi, parameetriteks on kasutajalt saadud nimi ja algne raha (mis on vaikimisi 100 eurot)
+        - olulisemad meetodid: getRaha() - tagastab mängija raha, lisaRaha(int summa) - lisab mängjale raha,
+        panePanus(int summa) - kontrollib, et mängijal on kontol piisavalt raha ja kui on, teeb panuse ja võtab mängija kontolt
+        panuse raha ära, getNimi() - tagastab mängija nime ja toString() - tagastab nime ja kui suure summaga kasiinost lahkus.
 
-3. Rulett klass
+    3. Rulett klass
+        - eesmärk: Klass, mille sees toimub ruleti mäng.
+        - olulisemad meetodid: mäng() - selle sees toimub ruleti mäng, küsib mängijalt panuse suurust ja seejärel küsib, mille peale
+        tahab panustada. Seejärel ratas keerleb ja lõpuks kuvab tulemuse, kas siis võit või kaotus. kasPunane() - kontrollib, kas
+        keerutusest tulnud arv on punane kui ei ole siis ta on must, välja arvatud arv 0, selle arvu värvus on roheline.
 
 Projekti tegemise protsessi kirjeldus:
 
