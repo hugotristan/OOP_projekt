@@ -24,14 +24,14 @@ public class Rulett {
             int panuseSumma = 0;
             boolean õigeSisend = false;
 
-            // Keep asking for the input until the user enters a valid integer
+            // Nii kaua küsib, kuni kasutaja paneb õige sisendi.
             while (!õigeSisend) {
                 try {
                     panuseSumma = scanner.nextInt();
                     õigeSisend = true;
                 } catch (InputMismatchException e) {
                     System.out.println("Sisestatud väärtus ei ole korrektne! Palun sisesta täisarv.");
-                    scanner.nextLine();  // Clear the invalid input
+                    scanner.nextLine();
                 }
             }
 
@@ -120,7 +120,18 @@ public class Rulett {
                 }
             }
 
-            System.out.println("Pall langes numbrile: " + keerutusetulemus);
+            String värv;
+            if(keerutusetulemus == 0)
+                värv = "roheline";
+            else if (onPunane) {
+                värv = "punane";
+            }
+            else{
+                värv = "must";
+            }
+
+
+            System.out.println("Pall langes numbrile: " + keerutusetulemus + " (" + värv + ")");
 
             if (võitis) {
                 System.out.println("Palju õnne! Võitsid " + võiduSumma + " eurot.");

@@ -1,8 +1,32 @@
+
 Autorite nimed: Markkus Pokrovski, Hugo Tristan Tammik
 Rühm: 6.rühm
 
-projekti põhjalik kirjeldus, kus on kirjas programmi eesmärk ja selgitus programmi üldisest tööst, vajadusel lühike kasutusjuhis;
-Projekti kirjeldus:
+Projekti kirjeldus: Selle programmi eesmärk on luua kasiino, kus mängijad saavad mängida kahte
+    populaarset kasiinomängu: rulett ja blackjack. Programmi alguses küsitakse mängija nime ning antakse
+    talle 100 eurot mängurahana. Mängija saab valida, millist mängu ta soovib mängida, ning panustada
+    oma raha vastavalt mängureeglitele.
+
+Tööpõhimõte: Programmi käivitamine:
+            - Programmi saab käivitada peaklassist Kasiino.
+            - Mängija sisestab oma nime.
+            - Mängija saab valida kahe mängu vahel: rulett või blackjack.
+
+             Mängude kirjeldus:
+            - Rulett: Mängija panustab kas värvile (punane/must), täpsele numbrile või muudele panustamisvõimalustele. Kui keerutuse tulemus vastab panusele, saab mängija võidu.
+            - Blackjack: Klassikaline kaardimäng, kus mängija püüab saada kaardikäe summaks 21 või lähedale, kuid mitte üle selle. Võidab see, kelle käsi on diileri omast parem.
+
+             Mänguraha ja panustamine:
+            - Mängija saab panustada oma raha igas mängus.
+            - Kui mängija kaotab kogu raha, ei saa ta edasi mängida ja peab programmi taaskäivitama.
+            - Kui mängija soovib lahkuda, saab ta seda teha mängu sees, sisestades vastava käsu.
+
+Kasutusjuhend: Käivita programm peaklassist Kasiino. Sisesta oma nimi. Vali, kas soovid mängida ruletti või blackjacki.
+    Tee panus ja jälgi mängu kulgu. Kui soovid lahkuda, kasuta mängus pakutavat väljumisvõimalust.
+
+Mängureeglid:
+    Blackjack: https://bicyclecards.com/how-to-play/blackjack
+    Rulett: https://www.clearwatercasino.com/wp-content/rules/Roulette.html
 
 
 Klassid, nende eesmärk ja olulisemad meetodid:
