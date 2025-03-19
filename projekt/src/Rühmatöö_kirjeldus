@@ -7,6 +7,15 @@ Projekti kirjeldus:
 
 Klassid, nende eesmärk ja olulisemad meetodid:
 
+1. Kasiino klass:
+    - eesmärk: Peaklass, mis loob kasiino isendi, küsib mängija nime ja alustab programmi. Annab valiku mängida
+    ruletti, blackjacki või lahkuda kasiinost.
+    - olulisemad meetodid: alusta(), see paneb pogrammi käima (printides ekraanile valikud)
+
+2. KasiinoMängija klass:
+
+3. Rulett klass
+
 Projekti tegemise protsessi kirjeldus:
 
 Tegemise mured:
