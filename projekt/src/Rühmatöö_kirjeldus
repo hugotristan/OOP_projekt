@@ -34,7 +34,7 @@ Klassid, nende eesmärk ja olulisemad meetodid:
     1. Kasiino klass:
         - eesmärk: Peaklass, mis loob kasiino isendi, küsib mängija nime ja alustab programmi. Annab valiku mängida
         ruletti, blackjacki või lahkuda kasiinost.
-        - olulisemad meetodid: alusta(), see paneb pogrammi käima (printides ekraanile valikud)
+        - olulisemad meetodid: alusta(), see paneb programmi käima (printides ekraanile valikud)
 
     2. KasiinoMängija klass:
         - eesmärk: Klass, mis loob mängija isendi, parameetriteks on kasutajalt saadud nimi ja algne raha (mis on vaikimisi 100 eurot)
@@ -47,6 +47,37 @@ Klassid, nende eesmärk ja olulisemad meetodid:
         - olulisemad meetodid: mäng() - selle sees toimub ruleti mäng, küsib mängijalt panuse suurust ja seejärel küsib, mille peale
         tahab panustada. Seejärel ratas keerleb ja lõpuks kuvab tulemuse, kas siis võit või kaotus. kasPunane() - kontrollib, kas
         keerutusest tulnud arv on punane kui ei ole siis ta on must, välja arvatud arv 0, selle arvu värvus on roheline.
+
+    4. MängBlackjack
+        - eesmärk: Klass, mille sees toimub blackjacki mäng.
+        - olulisemad meetodid: mäng() - peamine mängutsükkel, kus mängija teeb panuse ja mängib. mängijaKäik(Käsi käsi) - kontrollib,
+        kas mängija soovib võtta kaarte (hit) või jääda seisma (stand). kontrollivõitjat(Käsi käsi) - määrab, kas mängija võitis
+        või kaotas ja uuendab selle põhjal tema saldot.
+
+    5. MängijaBlackjack
+        - eesmärk: Klass, mis hoiab mängija panust ja kaarte, võimaldab panustamist ja võitude arvutamist.
+        - olulisemad meetodid: panusta(int summa) - võtab mängija saldost panuse maha. nulliKäed() - nullib mängija kaardid, kui
+        algab uus ring. võidaPanus(double kordaja) - lisab mängijale võidusumma.
+
+    6. Diiler
+        - eesmärk: Klass, mis hoiab diileri kaarte ja mänguloogikat.
+        - olulisemad meetodid: getKäsi() - tagastab diileri kaardid (käe). mängi(Pakk pakk) - diiler võtab nii kaua kaarte, kuni
+         tema kaartide summa jõuab vähemalt 17ni.
+
+    7. Käsi
+        - eesmärk: Klass, mille sees arvutatakse mängija/diileri kaartide summat.
+        - olulisemad meetodid: summa() - arvutab käe koguväärtuse ning kaarti äss arvestab väärtusega 11 nii kaua kuni see on võimalik,
+        peale mida on ässa väärtus 1. onBlackjack() - kontrollib, kas mängijal on kohe 21.  lisaKaart(Kaart kaart) - lisab uue kaardi kätte.
+        onLäbi() - kontrollib, kas käe väärtus on üle 21. getEsimeneKaart() - tagastab ainult esimese kaardi (diileri ühe kaardi näitamiseks).
+
+    8. Kaart
+        - eesmärk: Klass, mis "esindab" ühte mängukaarti (näiteks: Kuningas Ärtu)
+        - olulisemad meetodid: getVäärtus() - tagastab kaardi väärtuse punktidena (pildikaardid on 10, äss vastavalt 11 või 1.)
+        toString() - tagastab kaardi nimetuse (näiteks: Kuningas Poti, Emand Risti)
+
+    9. Pakk
+        - eesmärk: Klass, mille sees on kõik mängukaardid ja jagab neid mängijatele.
+        - olulisemad meetodid: segagePakk() - segab kaardipakki. jagaKaart() - võtab pakist pealmise kaardi ning annab selle mängijale.
 
 Projekti tegemise protsessi kirjeldus:
     Projekti planeerimine:
@@ -75,17 +106,45 @@ Projekti tegemise protsessi kirjeldus:
     Kokkuvõte: Mõlemad rühmaliikmed osalesid kõikides etappides.
 
 Iga rühmaliikme panus:
-    - Markkus: Klassid: Kasiino, KasiinoMängija, Rulett. Ajakulu:
-    - Hugo: Klassid: MängBlackJack, MängijaBlackJack, Pakk, Käsi, Kaart, Diiler. Ajakulu:
+    - Markkus: Klassid: Kasiino, KasiinoMängija, Rulett.
+      Ajakulu: 1,5h planeerimine, 5h koodi kirjutamine, 1h kontrollimine ja vigade parandus, 1h kokkuvõtte tegemine.
+    - Hugo: Klassid: MängBlackJack, MängijaBlackJack, Pakk, Käsi, Kaart, Diiler.
+      Ajakulu: 1,5h planeerimine, 5h koodi kirjutamine, 1h kontrollimine ja vigade parandus, 1h kokkuvõtte tegemine.
 
 Tegemise mured:
     - Tegemisel ei tekkinud suuri muresi, ega kohti kus oleksime tundnud, et teadmistest jääb puudu.
 
 Hinnang oma töö lõpptulemusele:
-    - Saime hästi hakkama:
-    - Vajab veel edasiarendust: Blackjack Split jne, Rulett veel erinevaid panuseid pole kõiki.
+    - Saime hästi hakkama: Suutsime hästi siduda oma eraldi tehtud mängud main programmiga nii, et midagi ei läinud katki ja tervik töötab ilusti.
+    - Vajab veel edasiarendust: Blackjacki split ehk kaartide poolitamise funktsioon ja ka double ehk duubeldamise funktsioon, Rulett veel erinevaid panuseid pole kõiki.
+    Samuti lisada veel graafiline kasutajaliides, progressi salvestamine ja veel mänge lisada.
 
 Selgitus ja/või näited, kuidas programmi osi eraldi ja programmi tervikuna testisite ehk kuidas veendusite, et programm töötab korrektselt:
-    - N1
-    - N2
-    - N3
+    - Programmi tervikliku testimise jaoks veendusime, et kõik mängud ja kasiino süsteem töötavad koos ilma vigadeta.
+    - Alustasime sellega, et saada mängud kõigepealt eraldi tööle ja seejärel nad ühendada tervikuks.
+
+    - Selgitus: Kontrollisime, kas kaardid luuakse õigesti ning nende väärtused ja nimed kuvatakse õigesti.
+    - Näide: public class KaartTest {
+                 public static void main(String[] args) {
+                     Kaart kaart = new Kaart("Poti", "Äss", 11);
+                     System.out.println(kaart);
+                     System.out.println("Väärtus: " + kaart.getVäärtus()); // väärtuseks peab tulema 11
+                 }
+             }
+
+    - Selgitus: Kontrollisime, kas mäng töötab loogiliselt ehk kas mängija saab kaarte võtta, panuseid teha ja kas mängu tulemus määratakse õigesti.
+    - Näide: public class BlackjackTest {
+                 public static void main(String[] args) {
+                     KasiinoMängija mängija = new KasiinoMängija("Testija", 100);
+                     MängBlackjack blackjack = new MängBlackjack(mängija);
+                     blackjack.mäng(); // Testime täispikka mängu
+                 }
+             }
+
+    - Selgitus: Testisime, kas mängija saab kasiinos valida Blackjacki, Ruletti või lahkuda mängust.
+    - Näide: public class KasiinoTest {
+                 public static void main(String[] args) {
+                     Kasiino kasiino = new Kasiino();
+                     kasiino.alusta();
+                 }
+             }

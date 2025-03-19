@@ -25,14 +25,13 @@ public class MängBlackjack {
             int panuseSumma = 0;
             boolean õigeSisend = false;
 
-            // Keep asking for the input until the user enters a valid integer
-            while (!õigeSisend) {
+            while (!õigeSisend) { // küsib sisendit seni, kuni sisestatakse korrektne
                 try {
                     panuseSumma = scanner.nextInt();
                     õigeSisend = true;
                 } catch (InputMismatchException e) {
                     System.out.println("Sisestatud väärtus ei ole korrektne! Palun sisesta täisarv.");
-                    scanner.nextLine();  // Clear the invalid input
+                    scanner.nextLine();
                 }
             }
 
@@ -74,6 +73,10 @@ public class MängBlackjack {
         }
         esimeneKord = true;
         while (esimeneKord) {
+            if (käsi.summa() == 21) {
+                System.out.println("Said 21!");
+                return;
+            }
             System.out.print("Vali: (1) Hit, (2) Stand: ");
             int valik = scanner.nextInt();
 
