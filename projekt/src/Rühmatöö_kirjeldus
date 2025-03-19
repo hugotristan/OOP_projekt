@@ -117,7 +117,7 @@ Tegemise mured:
 Hinnang oma töö lõpptulemusele:
     - Saime hästi hakkama: Suutsime hästi siduda oma eraldi tehtud mängud main programmiga nii, et midagi ei läinud katki ja tervik töötab ilusti.
     - Vajab veel edasiarendust: Blackjacki split ehk kaartide poolitamise funktsioon ja ka double ehk duubeldamise funktsioon, Rulett veel erinevaid panuseid pole kõiki.
-    Samuti lisada veel graafiline kasutajaliides, progressi salvestamine ja veel mänge lisada.
+      Samuti lisada veel graafiline kasutajaliides, progressi salvestamine ja veel mänge lisada.
 
 Selgitus ja/või näited, kuidas programmi osi eraldi ja programmi tervikuna testisite ehk kuidas veendusite, et programm töötab korrektselt:
     - Programmi tervikliku testimise jaoks veendusime, et kõik mängud ja kasiino süsteem töötavad koos ilma vigadeta.
