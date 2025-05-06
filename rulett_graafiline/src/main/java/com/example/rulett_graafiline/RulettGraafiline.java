@@ -65,7 +65,7 @@ public class RulettGraafiline extends Application {
 
         StackPane ratasPaneel = new StackPane(ratasGrupp, nool);
         StackPane.setAlignment(nool, Pos.CENTER_RIGHT);
-        StackPane.setMargin(nool, new Insets(0, 60, 0, 0));
+        StackPane.setMargin(nool, new Insets(0, 60, -30, 0));
 
         // kasutaja info ja sisend
         saldoSilt = new Label("Sinu saldo: 100 €");
