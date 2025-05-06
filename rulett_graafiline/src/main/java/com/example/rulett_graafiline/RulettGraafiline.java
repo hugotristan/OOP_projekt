@@ -4,9 +4,9 @@ import javafx.animation.RotateTransition;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
@@ -15,294 +15,324 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
+import java.util.Scanner;
 
 public class RulettGraafiline extends Application {
     private int saldo = 100;
-    private double currentAngle = 0; // Add this to the class
+    private double praeguneNurk = 355.0;
     private final String logifail = "rulettilog.txt";
-    private final Random random = new Random();
-
-    private Label saldoLabel;
-    private Label tulemusLabel;
-    private TextField panusField;
+    private final Random suvaline = new Random();
+    private Label saldoSilt;
+    private Label tulemusSilt;
+    private TextField panuseVäli;
     private ComboBox<String> panuseTüüp;
+    private int täpneNumber = -1;
 
-    private static final double WHEEL_RADIUS = 150;
-    private static final double CENTER_X = 200;
-    private static final double CENTER_Y = 200;
+    private final int[] ruleti_ratta_numbrid = {
+            0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13,
+            36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20,
+            14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26
+    };
 
-    @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("Graafiline Rulett");
+    public void start(Stage lava) {
+        lava.setTitle("Graafiline Rulett");
+        Group ratasGrupp = new Group();
+        double nurgaSamm = 360.0 / ruleti_ratta_numbrid.length;
 
-        // Create the wheel with sectors
-        Group wheelGroup = new Group();
-        int numSectors = 37; // 37 sectors, 0 to 36
-        double angleStep = 360.0 / numSectors; // Angle for each sector
+        // loome iga numbri jaoks sektori ja numbri teksti selle sekotiri peale
+        for (int i = 0; i < ruleti_ratta_numbrid.length; i++) {
+            int number = ruleti_ratta_numbrid[i];
+            double algusNurk = i * nurgaSamm;
+            double lõppNurk = (i + 1) * nurgaSamm;
 
-        int[] EUROPEAN_ORDER = {
-                0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8,
-                23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12,
-                35, 3, 26
-        };
-
-        for (int i = 0; i < EUROPEAN_ORDER.length; i++) {
-            int number = EUROPEAN_ORDER[i];
-            double startAngle = i * angleStep;
-            double endAngle = (i + 1) * angleStep;
-
-            Color sectorColor = determineSectorColor(number);
-            Path sector = createSectorPath(startAngle, endAngle, sectorColor);
-            wheelGroup.getChildren().add(sector);
-
-            Text sectorNumber = createSectorNumber(number, startAngle + angleStep / 2);
-            wheelGroup.getChildren().add(sectorNumber);
+            Color värv = leiaSektoriVärv(number);
+            Path sektor = looSektor(algusNurk, lõppNurk, värv);
+            Text tekst = looSektoriTekst(number, algusNurk + nurgaSamm / 2);
+            ratasGrupp.getChildren().addAll(sektor, tekst);
         }
 
-        wheelGroup.setRotate(355); // Adjusts so that sector 0 points upward (aligned with the red arrow)
-        currentAngle = 355; // Important to initialize this too!
+        // keerab ratast
+        ratasGrupp.setRotate(praeguneNurk);
 
-        // Nool (punane kolmnurk) - now on the right side pointing to center
-        Polygon nool = new Polygon(0, 0, -10, -30, 10, -30);
+        // punane nool, näitamaks tulemust
+        Polygon nool = new Polygon(0.0, 0.0, -10.0, -30.0, 10.0, -30.0);
         nool.setFill(Color.RED);
-        nool.setRotate(90); // Point to the left
+        nool.setRotate(90);
 
-        StackPane ratasPane = new StackPane(wheelGroup, nool);
-        StackPane.setAlignment(nool, Pos.CENTER_RIGHT); // Place it on the right side
-        StackPane.setMargin(nool, new Insets(0, 60, 0, 0)); // Move it toward center
+        StackPane ratasPaneel = new StackPane(ratasGrupp, nool);
+        StackPane.setAlignment(nool, Pos.CENTER_RIGHT);
+        StackPane.setMargin(nool, new Insets(0, 60, 0, 0));
 
-
-        // Controls
-        saldoLabel = new Label("Sinu saldo: 100 €");
-        panusField = new TextField();
-        panusField.setPromptText("Panuse summa");
+        // kasutaja info ja sisend
+        saldoSilt = new Label("Sinu saldo: 100 €");
+        panuseVäli = new TextField();
+        panuseVäli.setPromptText("Panuse summa");
 
         panuseTüüp = new ComboBox<>();
-        panuseTüüp.getItems().addAll(
-                "Punane", "Must", "Täpne number", "Paaris", "Paaritu", "Kõrge (19-36)", "Madal (1-18)"
-        );
+        panuseTüüp.getItems().addAll("Punane", "Must", "Täpne number", "Paaris", "Paaritu", "Kõrge (19–36)", "Madal (1–18)");
         panuseTüüp.setValue("Punane");
 
-        Button spinButton = new Button("SPIN");
-        spinButton.setOnAction(e -> spin(wheelGroup));
+        Button spinNupp = new Button("SPIN");
+        spinNupp.setOnAction(e -> spin(ratasGrupp));
 
-        Button viewLogButton = new Button("Vaata logi");
-        viewLogButton.setOnAction(e -> kuvaLogi());
+        Button logiNupp = new Button("Vaata logi");
+        logiNupp.setOnAction(e -> kuvaLogi());
 
-        tulemusLabel = new Label("Pane panus ja vajuta SPIN.");
-        tulemusLabel.setWrapText(true);
-        tulemusLabel.setMaxWidth(300);
-        tulemusLabel.setStyle("-fx-font-size: 14px;");
+        tulemusSilt = new Label("Pane panus ja vajuta SPIN.");
+        tulemusSilt.setWrapText(true);
+        tulemusSilt.setMaxWidth(300);
+        tulemusSilt.setStyle("-fx-font-size: 14px;");
 
-        VBox controls = new VBox(10, saldoLabel, panusField, panuseTüüp, spinButton, viewLogButton, tulemusLabel);
-        controls.setAlignment(Pos.CENTER);
-        controls.setPadding(new Insets(15));
+        // juhtpaneel - nupud + info
+        VBox juhtpaneel = new VBox(10, saldoSilt, panuseVäli, panuseTüüp, spinNupp, logiNupp, tulemusSilt);
+        juhtpaneel.setAlignment(Pos.CENTER);
+        juhtpaneel.setPadding(new Insets(15));
 
-        BorderPane root = new BorderPane();
-        root.setCenter(ratasPane);
-        root.setBottom(controls);
+        // paigutame ruleti ratta keskele ja juhtpaneeli alla
+        BorderPane juur = new BorderPane();
+        juur.setCenter(ratasPaneel);
+        juur.setBottom(juhtpaneel);
 
-        Scene scene = new Scene(root, 500, 600);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        Scene stseen = new Scene(juur, 500, 600);
+        lava.setScene(stseen);
+        lava.show();
     }
 
-    private void spin(Group wheelGroup) {
-        int[] EUROPEAN_ORDER = {
-                0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8,
-                23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12,
-                35, 3, 26
-        };
-
+    private void spin(Group ratasGrupp) {
         int panus;
+
+        // Kontrollib kas on korrektne panus, ei sobi kui panus väiksem 0 või suurem saldost
         try {
-            panus = Integer.parseInt(panusField.getText());
-            if (panus <= 0 || panus > saldo) throw new NumberFormatException();
-        } catch (NumberFormatException e) {
-            tulemusLabel.setText("Sisesta sobiv panus (positiivne ja mitte suurem kui saldo).");
+            panus = Integer.parseInt(panuseVäli.getText());
+            if (panus <= 0 || panus > saldo)
+                throw new NumberFormatException();
+        }
+        catch (NumberFormatException e) {
+            tulemusSilt.setText("Sisesta sobiv panus (positiivne ja mitte suurem kui saldo).");
             return;
         }
 
-        int number = random.nextInt(37);
-        int index = -1;
-        for (int i = 0; i < 37; i++) {
-            if (EUROPEAN_ORDER[i] == number) {
-                index = i;
+        // Kui valiti täpne number, küsime mängijalt, mis numbri peale soovitakse panustada
+        if (panuseTüüp.getValue().equals("Täpne number")) {
+            TextInputDialog dialoog = new TextInputDialog();
+            dialoog.setTitle("Täpne number");
+            dialoog.setHeaderText("Sisesta number vahemikus 0–36");
+            dialoog.setContentText("Number:");
+            try {
+                täpneNumber = Integer.parseInt(dialoog.showAndWait().orElse("-1"));
+            }
+            catch (Exception ignore) {
+                täpneNumber = -1;
+            }
+        }
+
+        int võiduNumber = suvaline.nextInt(37); //suvaline võidunumber vahemikus 0-36
+
+        // leiab võidunumbri asukoha ruletirattas
+        int indeks = -1;
+        for (int i = 0; i < ruleti_ratta_numbrid.length; i++) {
+            if (ruleti_ratta_numbrid[i] == võiduNumber) {
+                indeks = i;
                 break;
             }
         }
-        if (index == -1) {
-            tulemusLabel.setText("Viga: numberit ei leitud.");
+
+        if (indeks == -1) {
+            tulemusSilt.setText("Viga: võidunumber ei leitud.");
             return;
         }
 
-        double anglePerNumber = 360.0 / 37;
-        double targetAngle = 360 - index * anglePerNumber;
+        // arvutab kui palju peab ratast keerama
+        double nurkSektor = 360.0 / ruleti_ratta_numbrid.length;
+        double sihtnurk = indeks * nurkSektor;
 
+        // arvutame praeguse nurga
+        double praeguneNormaliseeritud = praeguneNurk % 360.0;
+        if (praeguneNormaliseeritud < 0)
+            praeguneNormaliseeritud += 360.0;
 
-        // Add full rotations for smoothness
-        double spinRotation = 360 * 5 + targetAngle - (currentAngle % 360)-5;
+        // keerutab ratast viis täispööret + sihtnurk
+        double pööramisnurk = 5 * 360 + (360.0 - sihtnurk - praeguneNormaliseeritud);
 
-        RotateTransition rt = new RotateTransition(Duration.seconds(3), wheelGroup);
-        rt.setByAngle(spinRotation);
-        rt.setOnFinished(e -> {
-            currentAngle += spinRotation; // Update total rotation
-            boolean võit = kontrolliVõitu(number);
-            String värv = number == 0 ? "roheline" : kasPunane(number) ? "punane" : "must";
+        // pöörlemise animatsioon
+        RotateTransition pöörle = new RotateTransition(Duration.seconds(3), ratasGrupp);
+        pöörle.setByAngle(pööramisnurk);
+        pöörle.setOnFinished(e -> {
+            praeguneNurk = (praeguneNurk + pööramisnurk) % 360.0;
+            boolean võit = kontrolliVõitu(võiduNumber);
 
-            if (võit) {
-                int võitSumma = panus * (panuseTüüp.getValue().equals("Täpne number") ? 35 : 2);
-                saldo += võitSumma;
-                tulemusLabel.setText("Pall langes numbrile: " + number + " (" + värv + "). Võitsid " + võitSumma + " €!");
-                salvestaLogisse("Võit: ", number, värv);
+            String värv;
+            if (võiduNumber == 0) {
+                värv = "roheline";
+            } else if (onPunane(võiduNumber)) {
+                värv = "punane";
             } else {
-                saldo -= panus;
-                tulemusLabel.setText("Pall langes numbrile: " + number + " (" + värv + "). Kahjuks kaotasid.");
-                salvestaLogisse("Kaotus: ", number, värv);
+                värv = "must";
             }
-            saldoLabel.setText("Sinu saldo: " + saldo + " €");
-        });
-        rt.play();
-    }
 
+            if (võit) { // kui võit suurendame saldot
+                int koef = panuseTüüp.getValue().equals("Täpne number") ? 35 : 1;
+                int võidusumma = panus * koef;
+                saldo += võidusumma;
+
+                tulemusSilt.setText("Pall jäi numbrile: " + võiduNumber + " (" + värv + "). Võitsid " + võidusumma + " €!");
+                salvestaLogisse("Võit", võiduNumber, värv);
+            }
+            else { // kui kaotus siis vähendame saldot
+                saldo -= panus;
+                tulemusSilt.setText("Pall jäi numbrile: " + võiduNumber + " (" + värv + "). Kahjuks kaotasid.");
+                salvestaLogisse("Kaotus", võiduNumber, värv);
+            }
+
+            // uuendab saldot
+            saldoSilt.setText("Sinu saldo: " + saldo + " €");
+        });
+        pöörle.play();
+    }
 
     private boolean kontrolliVõitu(int number) {
-        String tüüp = panuseTüüp.getValue();
-        return switch (tüüp) {
-            case "Punane" -> kasPunane(number);
-            case "Must" -> number != 0 && !kasPunane(number);
-            case "Täpne number" -> {
-                TextInputDialog dialog = new TextInputDialog();
-                dialog.setTitle("Sisesta number");
-                dialog.setHeaderText("Sisesta number 0-36");
-                dialog.setContentText("Number:");
-                int sisestatud = -1;
-                try {
-                    sisestatud = Integer.parseInt(dialog.showAndWait().orElse("-1"));
-                } catch (Exception ignored) {}
-                yield sisestatud == number;
-            }
-            case "Paaris" -> number != 0 && number % 2 == 0;
-            case "Paaritu" -> number % 2 == 1;
-            case "Kõrge (19-36)" -> number >= 19;
-            case "Madal (1-18)" -> number >= 1 && number <= 18;
-            default -> false;
-        };
+        String valitudPanus = panuseTüüp.getValue();
+
+        // Kui panus on punane
+        if (valitudPanus.equals("Punane")) {
+            return onPunane(number);
+        }
+        // Kui panus on must
+        else if (valitudPanus.equals("Must")) {
+            return number != 0 && !onPunane(number);
+        }
+        // Kui panus oli täpne number
+        else if (valitudPanus.equals("Täpne number")) {
+            return number == täpneNumber;
+        }
+        // Kui panus oli paaris
+        else if (valitudPanus.equals("Paaris")) {
+            return number != 0 && number % 2 == 0;
+        }
+
+        // Kui panus oli paaritu
+        else if (valitudPanus.equals("Paaritu")) {
+            return number % 2 == 1;
+        }
+
+        // Kui panus oli kõrge (19–36)
+        else if (valitudPanus.equals("Kõrge (19–36)")) {
+            return number >= 19;
+        }
+
+        // Kui panus oli madal (1–18)
+        else if (valitudPanus.equals("Madal (1–18)")) {
+            return number >= 1 && number <= 18;
+        }
+        else {
+            return false; // Kui ükski ei sobi
+        }
     }
 
-    private boolean kasPunane(int number) {
+    private boolean onPunane(int number) {
         int[] punased = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36};
-        for (int p : punased) if (p == number) return true;
+        for (int p : punased)
+            if (p == number)
+                return true;
         return false;
     }
 
-    private void salvestaLogisse(String tulemus, int number, String värv) {
-        String ajatempel = java.time.LocalDateTime.now()
-                .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String logiRida = String.format("%s - %s: %d (%s)", ajatempel, tulemus, number, värv);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(logifail, true))) {
-            writer.write(logiRida);
-            writer.newLine();
-        } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("Logi salvestamise viga");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+    private void salvestaLogisse(String tüüp, int number, String värv) {
+        // Loob kuupäeva ja kellaaja stringi praeguse hetke põhjal
+        String aeg = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        // Rida mida salvestame logisse
+        String rida = aeg + " - " + tüüp + ": " + number + " (" + värv + ")";
+
+        // Kirjutame logifaili
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(logifail, true))) {
+            bw.write(rida);
+            bw.newLine();
+        }
+        catch (IOException e) {
+            Alert hoiatus = new Alert(AlertType.ERROR);
+            hoiatus.setHeaderText("Logi salvestamise viga");
+            hoiatus.setContentText(e.getMessage());
+            hoiatus.showAndWait();
         }
     }
 
     private void kuvaLogi() {
-        StringBuilder logiSisu = new StringBuilder();
-        try (java.util.Scanner scanner = new java.util.Scanner(new java.io.File(logifail))) {
-            while (scanner.hasNextLine()) {
-                logiSisu.append(scanner.nextLine()).append("\n");
+        StringBuilder sisu = new StringBuilder(); //kogub logifaili sisu
+
+        try (Scanner sc = new Scanner(new File(logifail))) { // avab faili ja loeb sisu
+            while (sc.hasNextLine()) {
+                sisu.append(sc.nextLine()).append("\n");
             }
         } catch (IOException e) {
-            logiSisu.append("Logi ei leitud või ei saa lugeda.");
+            sisu.append("Logi ei leitud või lugemine ebaõnnestus.");
         }
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Mängulogi");
-        alert.setHeaderText("Varasemad tulemused:");
+        //loob uue akna kus saab logisi vaadata
+        Alert aken = new Alert(AlertType.INFORMATION);
+        aken.setTitle("Mängulogi");
+        aken.setHeaderText("Eelmised tulemused:");
 
-        TextArea textArea = new TextArea(logiSisu.toString());
-        textArea.setEditable(false);
-        textArea.setWrapText(true);
-        textArea.setPrefWidth(400);
-        textArea.setPrefHeight(300);
-
-        alert.getDialogPane().setContent(textArea);
-        alert.showAndWait();
+        //ala teksti jaoks
+        TextArea ala = new TextArea(sisu.toString());
+        ala.setEditable(false); //ei saa muuta
+        ala.setWrapText(true); //vahetab rida
+        ala.setPrefSize(400, 300);
+        aken.getDialogPane().setContent(ala);
+        aken.showAndWait();
     }
 
-    // Determine color for each sector
-    private Color determineSectorColor(int number) {
+    //ez
+    private Color leiaSektoriVärv(int number) {
         if (number == 0) {
             return Color.GREEN;
-        } else if (kasPunane(number)) {
+        }
+        else if (onPunane(number)) {
             return Color.RED;
-        } else {
+        }
+        else {
             return Color.BLACK;
         }
     }
 
-
-    // Create the path for each sector with proper circular design
-    private Path createSectorPath(double startAngle, double endAngle, Color color) {
-        Path path = new Path();
-        path.setFill(color);
-
-        // Move to the center of the circle
-        path.getElements().add(new MoveTo(CENTER_X, CENTER_Y));
-
-        // Draw the first line to the outer edge of the sector
-        path.getElements().add(new LineTo(
-                CENTER_X + WHEEL_RADIUS * Math.cos(Math.toRadians(startAngle)),
-                CENTER_Y + WHEEL_RADIUS * Math.sin(Math.toRadians(startAngle))
-        ));
-
-        // Draw the arc for the sector
-        path.getElements().add(new ArcTo(
-                WHEEL_RADIUS, WHEEL_RADIUS, 0,
-                CENTER_X + WHEEL_RADIUS * Math.cos(Math.toRadians(endAngle)),
-                CENTER_Y + WHEEL_RADIUS * Math.sin(Math.toRadians(endAngle)),
-                false, false
-        ));
-
-        // Close the path by drawing a line back to the center
-        path.getElements().add(new LineTo(CENTER_X, CENTER_Y));
-
-        // Return the path object
-        return path;
+    //loob ühe sektori
+    //algus - alguskraadid, lõpp - lõppkraadid
+    //MIDA PERSET PEAB ÜLE VAATAMA ARU SAAMA ALLIKA LEIDMA VMS
+    private Path looSektor(double algus, double lõpp, Color värv) {
+        Path tee = new Path();
+        tee.setFill(värv);
+        tee.getElements().add(new MoveTo(200, 200));
+        tee.getElements().add(new LineTo(200 + 150 * Math.cos(Math.toRadians(algus)), 200 + 150 * Math.sin(Math.toRadians(algus))));
+        tee.getElements().add(new ArcTo(150, 150, 0, 200 + 150 * Math.cos(Math.toRadians(lõpp)), 200 + 150 * Math.sin(Math.toRadians(lõpp)), false, false));
+        tee.getElements().add(new LineTo(200, 200));
+        return tee;
     }
 
-    // Create the number text for each sector with correct rotation
-    private Text createSectorNumber(int number, double angle) {
-        Text text = new Text(String.valueOf(number));
-        text.setFont(new Font(14));
-        text.setFill(Color.WHITE);
+    private Text looSektoriTekst(int number, double nurkKraadides) {
+        Text tekst = new Text(String.valueOf(number));
+        tekst.setFont(new Font(14));
+        tekst.setFill(Color.WHITE);
 
-        // Calculate position with inward offset to avoid edge clipping
-        double textRadius = WHEEL_RADIUS - 25;
-        double rad = Math.toRadians(angle);
-        double x = CENTER_X + textRadius * Math.cos(rad);
-        double y = CENTER_Y + textRadius * Math.sin(rad);
+        double raadius = 125; //kaugus keskpunktist
+        double rad = Math.toRadians(nurkKraadides); //nurk radiaanidesse, et saaks -cos ja -sin teha
 
-        // Position the text
-        text.setLayoutX(x - text.getLayoutBounds().getWidth() / 2);
-        text.setLayoutY(y + text.getLayoutBounds().getHeight() / 4);
+        // x ja y koordinaadid, kuhu tekst läheb
+        double x = 200 + raadius * Math.cos(rad);
+        double y = 200 + raadius * Math.sin(rad);
 
-        // Rotate perpendicular to the wheel radius (no flipping)
-        text.setRotate(angle - 270);
+        //paigutame teksti nii, et see oleks keskpunktiga õigesti joondatud
+        tekst.setLayoutX(x - tekst.getLayoutBounds().getWidth() / 2);
+        tekst.setLayoutY(y + tekst.getLayoutBounds().getHeight() / 4);
 
-        return text;
+        //pöörame teksti, et see sobiks sektorinurgaga visuaalset paremini
+        tekst.setRotate(nurkKraadides - 270);
+
+        return tekst;
     }
-
-
 
     public static void main(String[] args) {
         launch(args);
