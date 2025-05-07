@@ -53,7 +53,7 @@ public class RulettGraafiline2 extends Application {
         // punane nool
         double noolSuurus = ratasRaadius * 0.2;
         Polygon nool = new Polygon(0.0, 0.0, -noolSuurus / 2, -noolSuurus, +noolSuurus / 2, -noolSuurus);
-        nool.setFill(Color.RED);
+        nool.setFill(Color.BLUE);
         nool.setRotate(90);
         paigutusPane.getChildren().add(nool);
 
@@ -134,14 +134,18 @@ public class RulettGraafiline2 extends Application {
     private void spin(Group ratasGrupp) {
         int panus;
 
+        // Kontrollib kas on korrektne panus, ei sobi kui panus väiksem 0 või suurem saldost
         try {
             panus = Integer.parseInt(panuseVäli.getText());
-            if (panus <= 0 || panus > saldo) throw new NumberFormatException();
-        } catch (NumberFormatException e) {
+            if (panus <= 0 || panus > saldo)
+                throw new NumberFormatException();
+        }
+        catch (NumberFormatException e) {
             tulemusSilt.setText("Sisesta sobiv panus (positiivne ja mitte suurem kui saldo).");
             return;
         }
 
+        // Kui valiti täpne number, küsime mängijalt, mis numbri peale soovitakse panustada
         if (panuseTüüp.getValue().equals("Täpne number")) {
             TextInputDialog dialoog = new TextInputDialog();
             dialoog.setTitle("Täpne number");
@@ -149,12 +153,15 @@ public class RulettGraafiline2 extends Application {
             dialoog.setContentText("Number:");
             try {
                 täpneNumber = Integer.parseInt(dialoog.showAndWait().orElse("-1"));
-            } catch (Exception ignore) {
+            }
+            catch (Exception ignore) {
                 täpneNumber = -1;
             }
         }
 
-        int võiduNumber = suvaline.nextInt(37);
+        int võiduNumber = suvaline.nextInt(37); //suvaline võidunumber vahemikus 0-36
+
+        // leiab võidunumbri asukoha ruletirattas
         int indeks = -1;
         for (int i = 0; i < ruleti_ratta_numbrid.length; i++) {
             if (ruleti_ratta_numbrid[i] == võiduNumber) {
@@ -168,92 +175,159 @@ public class RulettGraafiline2 extends Application {
             return;
         }
 
+        // arvutab kui palju peab ratast keerama
         double nurkSektor = 360.0 / ruleti_ratta_numbrid.length;
         double sihtnurk = indeks * nurkSektor;
+
+        // arvutame praeguse nurga
         double praeguneNormaliseeritud = praeguneNurk % 360.0;
-        if (praeguneNormaliseeritud < 0) praeguneNormaliseeritud += 360.0;
+        if (praeguneNormaliseeritud < 0)
+            praeguneNormaliseeritud += 360.0;
+
+        // keerutab ratast viis täispööret + sihtnurk
         double pööramisnurk = 5 * 360 + (360.0 - sihtnurk - praeguneNormaliseeritud);
 
+        // pöörlemise animatsioon
         RotateTransition pöörle = new RotateTransition(Duration.seconds(3), ratasGrupp);
         pöörle.setByAngle(pööramisnurk);
         pöörle.setOnFinished(e -> {
             praeguneNurk = (praeguneNurk + pööramisnurk) % 360.0;
             boolean võit = kontrolliVõitu(võiduNumber);
 
-            String värv = (võiduNumber == 0) ? "roheline" : (onPunane(võiduNumber) ? "punane" : "must");
+            String värv;
+            if (võiduNumber == 0) {
+                värv = "roheline";
+            } else if (onPunane(võiduNumber)) {
+                värv = "punane";
+            } else {
+                värv = "must";
+            }
 
-            if (võit) {
+            if (võit) { // kui võit suurendame saldot
                 int koef = panuseTüüp.getValue().equals("Täpne number") ? 35 : 1;
                 int võidusumma = panus * koef;
                 saldo += võidusumma;
+
                 tulemusSilt.setText("Pall jäi numbrile: " + võiduNumber + " (" + värv + "). Võitsid " + võidusumma + " €!");
                 salvestaLogisse("Võit", võiduNumber, värv);
-            } else {
+            }
+            else { // kui kaotus siis vähendame saldot
                 saldo -= panus;
                 tulemusSilt.setText("Pall jäi numbrile: " + võiduNumber + " (" + värv + "). Kahjuks kaotasid.");
                 salvestaLogisse("Kaotus", võiduNumber, värv);
             }
 
+            // uuendab saldot
             saldoSilt.setText("Sinu saldo: " + saldo + " €");
         });
         pöörle.play();
     }
 
     private boolean kontrolliVõitu(int number) {
-        String valitud = panuseTüüp.getValue();
-        return switch (valitud) {
-            case "Punane" -> onPunane(number);
-            case "Must" -> number != 0 && !onPunane(number);
-            case "Täpne number" -> number == täpneNumber;
-            case "Paaris" -> number != 0 && number % 2 == 0;
-            case "Paaritu" -> number % 2 == 1;
-            case "Kõrge (19–36)" -> number >= 19;
-            case "Madal (1–18)" -> number >= 1 && number <= 18;
-            default -> false;
-        };
+        String valitudPanus = panuseTüüp.getValue();
+
+        // Kui panus on punane
+        if (valitudPanus.equals("Punane")) {
+            return onPunane(number);
+        }
+        // Kui panus on must
+        else if (valitudPanus.equals("Must")) {
+            return number != 0 && !onPunane(number);
+        }
+        // Kui panus oli täpne number
+        else if (valitudPanus.equals("Täpne number")) {
+            return number == täpneNumber;
+        }
+        // Kui panus oli paaris
+        else if (valitudPanus.equals("Paaris")) {
+            return number != 0 && number % 2 == 0;
+        }
+
+        // Kui panus oli paaritu
+        else if (valitudPanus.equals("Paaritu")) {
+            return number % 2 == 1;
+        }
+
+        // Kui panus oli kõrge (19–36)
+        else if (valitudPanus.equals("Kõrge (19–36)")) {
+            return number >= 19;
+        }
+
+        // Kui panus oli madal (1–18)
+        else if (valitudPanus.equals("Madal (1–18)")) {
+            return number >= 1 && number <= 18;
+        }
+        else {
+            return false; // Kui ükski ei sobi
+        }
     }
 
     private boolean onPunane(int number) {
         int[] punased = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36};
-        for (int p : punased) if (p == number) return true;
+        for (int p : punased)
+            if (p == number)
+                return true;
         return false;
     }
 
     private void salvestaLogisse(String tüüp, int number, String värv) {
+        // Loob kuupäeva ja kellaaja stringi praeguse hetke põhjal
         String aeg = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        // Rida mida salvestame logisse
         String rida = aeg + " - " + tüüp + ": " + number + " (" + värv + ")";
+
+        // Kirjutame logifaili
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(logifail, true))) {
             bw.write(rida);
             bw.newLine();
-        } catch (IOException e) {
-            new Alert(AlertType.ERROR, e.getMessage()).showAndWait();
+        }
+        catch (IOException e) {
+            Alert hoiatus = new Alert(AlertType.ERROR);
+            hoiatus.setHeaderText("Logi salvestamise viga");
+            hoiatus.setContentText(e.getMessage());
+            hoiatus.showAndWait();
         }
     }
 
     private void kuvaLogi() {
-        StringBuilder sisu = new StringBuilder();
-        try (Scanner sc = new Scanner(new File(logifail))) {
-            while (sc.hasNextLine()) sisu.append(sc.nextLine()).append("\n");
+        StringBuilder sisu = new StringBuilder(); //kogub logifaili sisu
+
+        try (Scanner sc = new Scanner(new File(logifail))) { // avab faili ja loeb sisu
+            while (sc.hasNextLine()) {
+                sisu.append(sc.nextLine()).append("\n");
+            }
         } catch (IOException e) {
             sisu.append("Logi ei leitud või lugemine ebaõnnestus.");
         }
 
-        TextArea ala = new TextArea(sisu.toString());
-        ala.setEditable(false);
-        ala.setWrapText(true);
-        ala.setPrefSize(400, 300);
-
+        //loob uue akna kus saab logisi vaadata
         Alert aken = new Alert(AlertType.INFORMATION);
         aken.setTitle("Mängulogi");
         aken.setHeaderText("Eelmised tulemused:");
+
+        //ala teksti jaoks
+        TextArea ala = new TextArea(sisu.toString());
+        ala.setEditable(false); //ei saa muuta
+        ala.setWrapText(true); //vahetab rida
+        ala.setPrefSize(400, 300);
         aken.getDialogPane().setContent(ala);
         aken.showAndWait();
     }
 
     private Color leiaSektoriVärv(int number) {
-        return number == 0 ? Color.GREEN : (onPunane(number) ? Color.RED : Color.BLACK);
+        if (number == 0) {
+            return Color.GREEN;
+        }
+        else if (onPunane(number)) {
+            return Color.RED;
+        }
+        else {
+            return Color.BLACK;
+        }
     }
 
+    //KOMMENTAARID
     private Path looSektor(double algus, double lõpp, Color värv) {
         Path tee = new Path();
         tee.setFill(värv);
@@ -274,12 +348,19 @@ public class RulettGraafiline2 extends Application {
         Text tekst = new Text(String.valueOf(number));
         tekst.setFont(new Font(14 * (ratasRaadius / 150)));
         tekst.setFill(Color.WHITE);
-        double raadius = ratasRaadius * 0.83;
-        double rad = Math.toRadians(nurkKraadides);
+
+        double raadius = ratasRaadius * 0.83; //kaugus keskpunktist
+        double rad = Math.toRadians(nurkKraadides); //nurk radiaanidesse, et saaks -cos ja -sin teha
+
+        // x ja y koordinaadid, kuhu tekst läheb
         double x = keskX + raadius * Math.cos(rad);
         double y = keskY + raadius * Math.sin(rad);
+
+        //paigutame teksti nii, et see oleks keskpunktiga õigesti joondatud
         tekst.setLayoutX(x - tekst.getLayoutBounds().getWidth() / 2);
         tekst.setLayoutY(y + tekst.getLayoutBounds().getHeight() / 4);
+
+        //pöörame teksti, et see sobiks sektorinurgaga visuaalset paremini
         tekst.setRotate(nurkKraadides - 270);
         return tekst;
     }
