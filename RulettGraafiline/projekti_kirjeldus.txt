@@ -1,0 +1,112 @@
+Projekt: Ruletimäng
+Autorite nimed: Markkus Pokrovski, Hugo Tristan Tammik
+Rühm: 6.rühm
+
+Projekti kirjeldus:  Selle programmi eesmärk on luua populaarne kasiino mäng rulett. Programmi alguses
+                     antakse mängijale 100 eurot mänguraha. Mängija saab valida, millist panust ta soovib
+                     panustada vastavalt mängureeglitele.
+
+Tööpõhimõte: Programmi käivitamine:
+            - Programmi saab käivitada peaklassist RulettGraafiline
+
+             Mängu rulett kirjeldus: Mängija panustab kas värvile (punane/must), täpsele numbrile või muudele
+             panustamisvõimalustele. Kui keerutuse tulemus vastab panusele, saab mängija võidu.
+
+             Mänguraha ja panustamine:
+            - Mängija saab panustada oma saldo ulatuses
+            - Kui mängija kaotab kogu raha, ei saa ta edasi mängida ja peab programmi taaskäivitama.
+            - Kui mängija soovib lahkuda, saab ta seda teha programmi sulgedes ristist.
+
+Kasutusjuhend: Käivita programm peaklassist. Tee panus ja jälgi mängu kulgu. Kui soovid lahkuda, kasuta mängus
+               pakutavat väljumise võimalust.
+
+
+Mängureeglid: Rulett: https://www.clearwatercasino.com/wp-content/rules/Roulette.html
+
+
+Klassid, nende eesmärk ja olulisemad meetodid:
+
+1. RulettPeaklass:
+        - eesmärk: Peaklass, mis alustab programmi.
+        - olulisemad meetodid:
+			       start(Stage lava) - loob ja kuvab JavaFX-i kasutajaliidese
+                   looJuhtpaneel(Group ratasGrupp) – loob juhtpaneeli, mis sisaldab saldo, panuse sisendi ja nuppe
+                               
+
+
+2. RulettLoogika:
+        - eesmärk: Peaklass, mis alustab programmi.
+        - olulisemad meetodid: 
+                               uuendaMõõdud(Group ratasGrupp, Pane konteiner) - arvutab ratta mõõdud vastavalt akna suurusele ja joonistab sektorid uuesti
+                               paigutaNool(Polygon nool, Pane konteiner) – paigutab noole ruletiratta suhtes
+			                   looNool() - loob sinise noole
+                               spin(Group ratasGrupp, String panusTekst, String panuseTüüp, Label saldoSilt, Label tulemusSilt, RulettLogi logi) – käivitab ruletiratta pöörlemise, määrab tulemuse ja uuendab mängu olekut
+                               kontrolliVõitu(int number, String valitudPanus) – kontrollib kas kasutaja võitis
+			                   onPunane(int number) – kontrollib, kas antud ruletinumber on punane
+                               leiaSektoriVärv(int number) – tagastab sektori värvi vastavalt ruletinumbrile (punane, must või roheline)
+			                   looSektor(double algus, double lõpp, Color värv) – loob ühe ruletiratta sektorikujulise lõigu kindla värviga
+                               looSektoriTekst(int number, double nurkKraadides) – loob sektorile numbri teksti ja paigutab selle õigesse kohta	
+
+3. RulettLogid:
+        - eesmärk: Peaklass, mis alustab programmi.
+        - olulisemad meetodid: 
+			       salvestaLogisse(String tüüp, int number, String värv) – salvestab mängu tulemuse logifaili koos ajaga
+                   kuvaLogi() – kuvab mängulogi uues aknas
+
+Projekti tegemise protsessi kirjeldus:
+    Projekti planeerimine:
+        - mõtlesime, millest projekti teha
+        - koostasime esialgse plaani
+        - jagasime ülesanded rühmaliikmete vahel
+        - määrasime tähtajad
+
+
+    Kasutajaliidese programmeerimine:
+        - tekstid
+        - ruleti ratas
+        - panustamis kast (kuhu saab panustamis summa panna)
+        - erinevad nupud
+        - valiku kast (panuste jaoks)
+
+
+    Mängu loogika programmeerimine:
+        - Panustamise võimalused
+        - arvude genereerimise
+        - võidu tulemuste kontrollimine
+
+    Logide loogika programmeerimine:
+        - logide salvestamine
+        - logide vaatamine
+
+    Lõplik testimine ja viimistlemine:
+        - Testisime mängu käiku erinevate sisenditega
+        - Parandasime viimased vead ja optimeerisime koodi.
+        - Dokumenteerisime programmi töö ja koostasime kasutusjuhendi.
+
+    Kokkuvõte: Mõlemad rühma liikmed osalesid kõikides etappides.
+
+Iga rühmaliikme panus:
+    - Markkus: Klass: RulettPeaklass (tegime koos), RulettLoogika: looNool(), kontrollivõitu(), onPunane(), (ülejäänud tegime koos)
+      Ajakulu: 1,5h planeerimine, 10h koodi kirjutamine, 1,5h kontrollimine ja vigade parandus, 1h kokkuvõtte tegemine.
+    - Hugo: Klass: RulettLogid, RulettPeaklass (tegime koos), RulettLoogika (tegime koos)
+      Ajakulu: 1,5h planeerimine, 10h koodi kirjutamine, 1,5h kontrollimine ja vigade parandus, 1h kokkuvõtte tegemine.
+
+Tegemise mured:
+    - Tegemisel osutus kõige suurimaks raskuseks sektorite loogika ja programmi akna suurust muutes peab kuvatu mõistlikult muutuma, osutus väga
+    raskeks ja ajakulukaks tegevuseks. Arvatavasti, et avastasime tingimuse alles siis kui kõik oli juba valmis ja siis oli päris
+    raske muutusi teha
+
+Hinnang oma töö lõpptulemusele:
+    - Saime hästi hakkama: Saime valmis töötava ruleti ratta, mida on meil endal lõbus kasutada.
+    - Vajab veel edasiarendust: Lisada veel erinevaid panuseid. Saldo võiks salvestuda kui mängust lahkuda ja taas avades kuvab
+      eelneva saldo. Akna suuruse muutmine saaks olla ilusam ja sujuvam.
+
+
+Selgitus ja/või näited, kuidas programmi osi eraldi ja programmi tervikuna testisite ehk kuidas veendusite, et programm töötab korrektselt:
+    - Programmi tervikliku testimise jaoks veendusime, et mäng töötab ilma vigadeta.
+
+    - Selgitus: enne kui tegime nupu "vaata logi" kontrollisime, et logid tekivad faili "rulettilog.txt"
+    
+    - Selgitus: enne kui tegime programmi, mille suurus muutub, tegime fikseeritud suurusega programmi
+    
+    - Selgitus: enne kui hakkasime ratta loogikat tegema, tegime valmis ratta ja kontrollisime kas suudame selle keerlema panna
